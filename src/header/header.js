@@ -1,19 +1,15 @@
 import './Header.css';
 import test from './data.json'
+import {Outlet,Link} from "react-router-dom";
 
 function header() {
-    var items = Object.keys(test).map((key, index) => {
-        return (
-        <li className="TopLinks" key={index}> 
-            <a href={test[key]}> {key}</a>
-        </li>
-        )
-    })
     return (
         <div className="Header">
-            <ul>
-                {items}
-            </ul>
+            <nav>
+                <Link to="ieee">ieee</Link>
+                <Link to="int">int</Link>
+            </nav>
+            <Outlet />
         </div>
     );
 }

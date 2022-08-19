@@ -1,0 +1,6 @@
+make.exe --dry-run --keep-going --print-directory
+make: Entering directory 'c:/Users/milan/OneDrive/Bureaublad/reactapp/reactTestApp'
+make: Leaving directory 'c:/Users/milan/OneDrive/Bureaublad/reactapp/reactTestApp'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+

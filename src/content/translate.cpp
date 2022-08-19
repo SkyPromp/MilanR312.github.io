@@ -3,12 +3,40 @@
 #include <string>
 #include <iostream>
 #include <assert.h>
+#include <math.h>
+
+#ifdef Build
 #include <emscripten/bind.h>
-
-
-
 using namespace emscripten;
-std::string toInt(double a, int exp, int mantissa){
+#define print(text,val)
+#else
+#define print(text, val) std::cout << text << " = " << val << std::endl;
+#endif
+
+std::string IntToInt(double inp, uint16_t decimals){
+    std::string out;
+    int index = 0;
+    uint64_t tmp = 1;
+    double val = inp;
+    // gets the largest exponent wich is still smaller than the input
+    while ((double) (tmp << index) < inp){++index;};
+    print("largest exponent",index);
+    index--;
+    //devide and conquer
+    for (index; index >= -decimals; index--){
+        double current = val - pow(2,index);
+        if (current >= 0.0){
+            val = current;
+            out += '1';
+        } else {
+            out += '0';
+        }
+        if (index == 0) out += '.';
+    }
+    return out;
+}
+
+std::string FloatToInt(double a, int exp, int mantissa){
     std::string temp;
 
     std::string output;
@@ -41,6 +69,14 @@ std::string toInt(double a, int exp, int mantissa){
     return output;
 } 
 
+#ifdef Build
 EMSCRIPTEN_BINDINGS(Module){
-    function("toInt", &toInt);
+    function("IntToInt", &IntToInt);
+    function("FloatToInt", &FloatToInt);
 }
+#else
+int main(){
+    IntToInt(11.5,5);
+    //coo
+}
+#endif

@@ -1,17 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter , Route, Routes} from 'react-router-dom';
 import './index.css';
-import App from './App';
+
 import HeaderTop from './header/header'
-import Oef from './content/content';
+import Ieee from './content/ieee';
+import Int from './content/int'
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <HeaderTop />
-    <Oef />
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HeaderTop />}>
+          <Route path="ieee" element={<Ieee />} />
+          <Route path="int" element={<Int />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

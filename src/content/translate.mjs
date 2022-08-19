@@ -1,6 +1,6 @@
 /* eslint-disable */
 var Module = (() => {
-  var _scriptDir = '/lss.wasm';
+var _scriptDir = "/translate.wasm"
   
   return (
 function(Module) {
@@ -110,7 +110,7 @@ if (ENVIRONMENT_IS_NODE) {
  };
 } else if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
  if (ENVIRONMENT_IS_WORKER) {
-  scriptDirectory = window.self.location.href;
+scriptDirectory = window.self.location.href;
  } else if (typeof document != "undefined" && document.currentScript) {
   scriptDirectory = document.currentScript.src;
  }
@@ -416,6 +416,7 @@ function abort(what) {
  throw e;
 }
 
+
 function isFileURI(filename) {
  return filename.startsWith("file://");
 }
@@ -423,26 +424,27 @@ function isFileURI(filename) {
 var wasmBinaryFile;
 
 if (Module["locateFile"]) {
- wasmBinaryFile = '/lss.wasm';
+ wasmBinaryFile = "translate.wasm";
 } else {
- wasmBinaryFile = new URL("lss.wasm", import.meta.url).toString();
+ wasmBinaryFile = new URL("translate.wasm", import.meta.url).toString();
 }
 
 
 
 const getBinaryPromise = () => new Promise((resolve, reject) => {
-  fetch(wasmBinaryFile, { credentials: 'same-origin' })
-    .then(
-      response => {
-       if (!response['ok']) {
-        throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
-       }
-       return response['arrayBuffer']();
+ fetch(wasmBinaryFile, { credentials: 'same-origin' })
+   .then(
+     response => {
+      if (!response['ok']) {
+       throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
       }
-    )
-    .then(resolve)
-    .catch(reject);
- });
+      return response['arrayBuffer']();
+     }
+   )
+   .then(resolve)
+   .catch(reject);
+});
+        
 
 function createWasm() {
  var info = {
@@ -472,7 +474,7 @@ function createWasm() {
   });
  }
  function instantiateAsync() {
-  if (!wasmBinary && typeof WebAssembly.instantiateStreaming === "function" && typeof fetch === "function") {
+if (!wasmBinary && typeof WebAssembly.instantiateStreaming === "function" && typeof fetch === "function"){
    return fetch(wasmBinaryFile, {
     credentials: "same-origin"
    }).then(function(response) {
@@ -4168,27 +4170,27 @@ FS.staticInit();
 
 var asmLibraryArg = {
  "v": ___assert_fail,
- "k": __embind_register_bigint,
- "i": __embind_register_bool,
- "h": __embind_register_emval,
+ "l": __embind_register_bigint,
+ "j": __embind_register_bool,
+ "i": __embind_register_emval,
  "f": __embind_register_float,
- "u": __embind_register_function,
+ "h": __embind_register_function,
  "b": __embind_register_integer,
  "a": __embind_register_memory_view,
  "e": __embind_register_std_string,
  "c": __embind_register_std_wstring,
- "l": __embind_register_void,
+ "m": __embind_register_void,
  "d": _abort,
- "t": _emscripten_memcpy_big,
- "s": _emscripten_resize_heap,
- "o": _environ_get,
- "p": _environ_sizes_get,
- "q": _fd_close,
- "r": _fd_read,
- "j": _fd_seek,
+ "u": _emscripten_memcpy_big,
+ "t": _emscripten_resize_heap,
+ "p": _environ_get,
+ "q": _environ_sizes_get,
+ "r": _fd_close,
+ "s": _fd_read,
+ "k": _fd_seek,
  "g": _fd_write,
- "m": _setTempRet0,
- "n": _strftime_l
+ "n": _setTempRet0,
+ "o": _strftime_l
 };
 
 var asm = createWasm();

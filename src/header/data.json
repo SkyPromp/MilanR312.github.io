@@ -1,6 +1,4 @@
 {
     "main": "http://localhost:3000/",
-    "hyperlinks":"http://localhost:3000/",
-    "extra":"http://localhost:3000/",
-    "cool":"www.youtube.com"
+    "IEEE": "./content/ieee"
 }
