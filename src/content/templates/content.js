@@ -1,22 +1,15 @@
 /*var Module = require('./translate.js')
 console.log(Module.toInt(53.3,5,5))*/
 import React from 'react';
-import "./oef.css"
-
-function Textinp(props){
-    return (
-    <div>
-        <label htmlFor={props.name}>{props.name} {props.label}</label>
-        <input type="text" id={props.name} name={props.name} value={props.obj[props.name]} onChange={props.handler}></input>
-    </div>
-    )
-}
+import { Textinp } from './textinp';
+import { Button } from '@mui/material';
+import { Box } from '@mui/system';
 
 class oef extends React.Component{
-    constructor(props, state, checkingFunction, className_t){
+    constructor(props, checkingFunction, className_t){
         super(props)
-        this.number = Math.random()*100
-        this.state = state
+        this.state = {}
+        
         console.log("state")
         console.log(this.state)
         /*{
@@ -32,6 +25,9 @@ class oef extends React.Component{
         this.className_t = className_t
 
     }
+    componentDidMount(){
+        this.nextNumber()
+    }
     //gets overwritten
     translator(a,b){
         return null
@@ -45,7 +41,7 @@ class oef extends React.Component{
     }
 
     async buttonHandler(){
-        console.log(this.number)
+        console.log(this.state.number)
         try {
             this.result = await this.translator()
             //IntTranslate(this.number,parseInt(this.state.exponent), parseInt(this.state.mantissa))
@@ -66,7 +62,7 @@ class oef extends React.Component{
         console.log(this.state.result)
         this.correct = this.checkingFunction(this.result, this.state.result)
         //this.result == this.state.result
-        alert(this.correct)
+        alert(this.correct ? "Correct" : "incorrect")
 
     }
     inputs(){
@@ -74,17 +70,27 @@ class oef extends React.Component{
             <p>add your custom buttons</p>
         )
     }
+    nextNumber(){
+        this.setState((state,props) => ({
+            number: Math.random()*200
+        })) 
+    }
     render(){
         return (
-            <div className={this.className_t}>
-                <p>{this.number}</p>
+            <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                <p>{this.state.number}</p>
 
                 {this.inputs()}
-                
+
                 <Textinp name="result" obj={this.state} handler={this.handleChange} />
-                <button onClick={() => {this.buttonHandler();this.getAnswer()}}>GetAnswer</button>
-                <button onClick={() => {this.check()}}>check</button>
-            </div>
+                <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                    <Button onClick={async () => {await this.buttonHandler();this.getAnswer()}}>GetAnswer</Button>
+                    <Button onClick={() => {this.check()}}>check</Button>
+                    <Button onClick={() => this.nextNumber()}>Next</Button>
+                </Box>
+                
+            </Box>
+
         )
     }
 }

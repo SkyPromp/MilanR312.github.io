@@ -4,6 +4,8 @@
 #include <iostream>
 #include <assert.h>
 #include <math.h>
+#include <algorithm>
+
 
 #ifdef Build
 #include <emscripten/bind.h>
@@ -22,7 +24,6 @@ std::string IntToInt(double inp, uint16_t decimals){
     while ((double) (tmp << index) < inp){++index;};
     print("largest exponent",index);
     index--;
-    //devide and conquer
     for (index; index >= -decimals; index--){
         double current = val - pow(2,index);
         if (current >= 0.0){
@@ -69,14 +70,45 @@ std::string FloatToInt(double a, int exp, int mantissa){
     return output;
 } 
 
+std::string AppleToInt(double a, int exp, int mantissa){
+    std::string out;
+    out = (a > 0) ? "0" : "1";
+    double b = abs(a);
+    int n = 1;
+    do {
+        n++;
+    } while (1<<n < b);
+    print("n",n);
+    assert(n <= exp);
+    assert(mantissa+exp< 64);
+    std::string d = IntToInt(b,64);
+    print("d",d);
+    //remove decimal and pad
+    for (size_t i = 0; i < mantissa+1; i++){
+        print("d[i", d[i]);
+        if (d[i] == '.'){
+            continue;
+        }
+        out += d[i];
+    }
+    //add offset to exp
+    n += 1<<(exp-1);
+    out += IntToInt(n,0);
+    //remove last decimal
+    out.pop_back();
+    return out;
+}
+
 #ifdef Build
 EMSCRIPTEN_BINDINGS(Module){
     function("IntToInt", &IntToInt);
     function("FloatToInt", &FloatToInt);
+    function("AppleToInt", &AppleToInt);
 }
 #else
 int main(){
-    IntToInt(11.5,5);
+    AppleToInt(-23.75,8,15);
+    //AppleToInt(200,10,10);
     //coo
 }
 #endif

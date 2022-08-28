@@ -1,13 +1,7 @@
-import oef from "./content.js"
-import test from './translate.mjs';
-function Textinp(props){
-    return (
-    <div>
-        <label htmlFor={props.name}>{props.name} {props.label}</label>
-        <input type="text" id={props.name} name={props.name} value={props.obj[props.name]} onChange={props.handler}></input>
-    </div>
-    )
-}
+import oef from "./templates/content.js"
+import test from './data/translate.mjs';
+import { Textinp } from "./templates/textinp.js";
+
 async function IntTranslate(number, decimals){
     console.log("num = " + number + " dec = " + decimals)
     module = await test({
@@ -20,18 +14,21 @@ async function IntTranslate(number, decimals){
 
 class INT extends oef{
     constructor(props){
+        
         super(
             props,
-            { 
-                result: '', //result
-                decimals: '', //exponent or decimals
-            },
             (a,b) => a==b,
             "TYPE oef"
         )
+        this.state = { 
+            number: 2,
+            result: '', //result
+            decimals: '2', //exponent or decimals
+        }
     }
     translator(){
-        return IntTranslate(this.number, parseInt(this.state.decimals))
+        console.log(this.state.number)
+        return IntTranslate(this.state.number, parseInt(this.state.decimals))
     }
     inputs(){
         return (

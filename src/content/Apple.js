@@ -10,9 +10,9 @@ async function IntTranslate(number, exp, mant){
         noExitRuntime: true
     })
     console.log(module)
-    return await module.FloatToInt(number,exp,mant)
+    return await module.AppleToInt(number,exp,mant)
 } 
-class ieee extends oef{
+class Apple extends oef{
     constructor(props){
         super(
             props,
@@ -38,4 +38,4 @@ class ieee extends oef{
         )
     }
 }
-export default ieee;
+export default Apple;

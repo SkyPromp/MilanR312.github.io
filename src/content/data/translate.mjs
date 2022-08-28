@@ -170,12 +170,6 @@ if (Module["thisProgram"]) thisProgram = Module["thisProgram"];
 
 if (Module["quit"]) quit_ = Module["quit"];
 
-var tempRet0 = 0;
-
-var setTempRet0 = value => {
- tempRet0 = value;
-};
-
 var wasmBinary;
 
 if (Module["wasmBinary"]) wasmBinary = Module["wasmBinary"];
@@ -453,10 +447,10 @@ function createWasm() {
  function receiveInstance(instance, module) {
   var exports = instance.exports;
   Module["asm"] = exports;
-  wasmMemory = Module["asm"]["w"];
+  wasmMemory = Module["asm"]["v"];
   updateGlobalBufferAndViews(wasmMemory.buffer);
-  wasmTable = Module["asm"]["z"];
-  addOnInit(Module["asm"]["x"]);
+  wasmTable = Module["asm"]["y"];
+  addOnInit(Module["asm"]["w"]);
   removeRunDependency("wasm-instantiate");
  }
  addRunDependency("wasm-instantiate");
@@ -1533,7 +1527,7 @@ var PATH = {
   return path.substr(lastSlash + 1);
  },
  join: function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
+  var paths = Array.prototype.slice.call(arguments);
   return PATH.normalize(paths.join("/"));
  },
  join2: (l, r) => {
@@ -1637,10 +1631,10 @@ var TTY = {
    stream.seekable = false;
   },
   close: function(stream) {
-   stream.tty.ops.flush(stream.tty);
+   stream.tty.ops.fsync(stream.tty);
   },
-  flush: function(stream) {
-   stream.tty.ops.flush(stream.tty);
+  fsync: function(stream) {
+   stream.tty.ops.fsync(stream.tty);
   },
   read: function(stream, buffer, offset, length, pos) {
    if (!stream.tty || !stream.tty.ops.get_char) {
@@ -1727,7 +1721,7 @@ var TTY = {
     if (val != 0) tty.output.push(val);
    }
   },
-  flush: function(tty) {
+  fsync: function(tty) {
    if (tty.output && tty.output.length > 0) {
     out(UTF8ArrayToString(tty.output, 0));
     tty.output = [];
@@ -1743,7 +1737,7 @@ var TTY = {
     if (val != 0) tty.output.push(val);
    }
   },
-  flush: function(tty) {
+  fsync: function(tty) {
    if (tty.output && tty.output.length > 0) {
     err(UTF8ArrayToString(tty.output, 0));
     tty.output = [];
@@ -3650,8 +3644,7 @@ var SYSCALLS = {
   if (dirfd === -100) {
    dir = FS.cwd();
   } else {
-   var dirstream = FS.getStream(dirfd);
-   if (!dirstream) throw new FS.ErrnoError(8);
+   var dirstream = SYSCALLS.getStreamFromFD(dirfd);
    dir = dirstream.path;
   }
   if (path.length == 0) {
@@ -3674,7 +3667,7 @@ var SYSCALLS = {
   HEAP32[buf >> 2] = stat.dev;
   HEAP32[buf + 8 >> 2] = stat.ino;
   HEAP32[buf + 12 >> 2] = stat.mode;
-  HEAP32[buf + 16 >> 2] = stat.nlink;
+  HEAPU32[buf + 16 >> 2] = stat.nlink;
   HEAP32[buf + 20 >> 2] = stat.uid;
   HEAP32[buf + 24 >> 2] = stat.gid;
   HEAP32[buf + 28 >> 2] = stat.rdev;
@@ -3685,15 +3678,15 @@ var SYSCALLS = {
   tempI64 = [ Math.floor(stat.atime.getTime() / 1e3) >>> 0, (tempDouble = Math.floor(stat.atime.getTime() / 1e3), 
   +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
   HEAP32[buf + 56 >> 2] = tempI64[0], HEAP32[buf + 60 >> 2] = tempI64[1];
-  HEAP32[buf + 64 >> 2] = 0;
+  HEAPU32[buf + 64 >> 2] = 0;
   tempI64 = [ Math.floor(stat.mtime.getTime() / 1e3) >>> 0, (tempDouble = Math.floor(stat.mtime.getTime() / 1e3), 
   +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
   HEAP32[buf + 72 >> 2] = tempI64[0], HEAP32[buf + 76 >> 2] = tempI64[1];
-  HEAP32[buf + 80 >> 2] = 0;
+  HEAPU32[buf + 80 >> 2] = 0;
   tempI64 = [ Math.floor(stat.ctime.getTime() / 1e3) >>> 0, (tempDouble = Math.floor(stat.ctime.getTime() / 1e3), 
   +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
   HEAP32[buf + 88 >> 2] = tempI64[0], HEAP32[buf + 92 >> 2] = tempI64[1];
-  HEAP32[buf + 96 >> 2] = 0;
+  HEAPU32[buf + 96 >> 2] = 0;
   tempI64 = [ stat.ino >>> 0, (tempDouble = stat.ino, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
   HEAP32[buf + 104 >> 2] = tempI64[0], HEAP32[buf + 108 >> 2] = tempI64[1];
   return 0;
@@ -3770,7 +3763,7 @@ function _fd_read(fd, iov, iovcnt, pnum) {
  try {
   var stream = SYSCALLS.getStreamFromFD(fd);
   var num = doReadv(stream, iov, iovcnt);
-  HEAP32[pnum >> 2] = num;
+  HEAPU32[pnum >> 2] = num;
   return 0;
  } catch (e) {
   if (typeof FS == "undefined" || !(e instanceof FS.ErrnoError)) throw e;
@@ -3821,10 +3814,6 @@ function _fd_write(fd, iov, iovcnt, pnum) {
   if (typeof FS == "undefined" || !(e instanceof FS.ErrnoError)) throw e;
   return e.errno;
  }
-}
-
-function _setTempRet0(val) {
- setTempRet0(val);
 }
 
 function __isLeapYear(year) {
@@ -4169,15 +4158,15 @@ FS.FSNode = FSNode;
 FS.staticInit();
 
 var asmLibraryArg = {
- "v": ___assert_fail,
- "l": __embind_register_bigint,
- "j": __embind_register_bool,
- "i": __embind_register_emval,
- "f": __embind_register_float,
- "h": __embind_register_function,
+ "e": ___assert_fail,
+ "n": __embind_register_bigint,
+ "k": __embind_register_bool,
+ "j": __embind_register_emval,
+ "g": __embind_register_float,
+ "i": __embind_register_function,
  "b": __embind_register_integer,
  "a": __embind_register_memory_view,
- "e": __embind_register_std_string,
+ "f": __embind_register_std_string,
  "c": __embind_register_std_wstring,
  "m": __embind_register_void,
  "d": _abort,
@@ -4187,52 +4176,51 @@ var asmLibraryArg = {
  "q": _environ_sizes_get,
  "r": _fd_close,
  "s": _fd_read,
- "k": _fd_seek,
- "g": _fd_write,
- "n": _setTempRet0,
+ "l": _fd_seek,
+ "h": _fd_write,
  "o": _strftime_l
 };
 
 var asm = createWasm();
 
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
- return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["x"]).apply(null, arguments);
+ return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["w"]).apply(null, arguments);
 };
 
 var _malloc = Module["_malloc"] = function() {
- return (_malloc = Module["_malloc"] = Module["asm"]["y"]).apply(null, arguments);
+ return (_malloc = Module["_malloc"] = Module["asm"]["x"]).apply(null, arguments);
 };
 
 var ___getTypeName = Module["___getTypeName"] = function() {
- return (___getTypeName = Module["___getTypeName"] = Module["asm"]["A"]).apply(null, arguments);
+ return (___getTypeName = Module["___getTypeName"] = Module["asm"]["z"]).apply(null, arguments);
 };
 
 var __embind_initialize_bindings = Module["__embind_initialize_bindings"] = function() {
- return (__embind_initialize_bindings = Module["__embind_initialize_bindings"] = Module["asm"]["B"]).apply(null, arguments);
+ return (__embind_initialize_bindings = Module["__embind_initialize_bindings"] = Module["asm"]["A"]).apply(null, arguments);
 };
 
 var _free = Module["_free"] = function() {
- return (_free = Module["_free"] = Module["asm"]["C"]).apply(null, arguments);
+ return (_free = Module["_free"] = Module["asm"]["B"]).apply(null, arguments);
 };
 
 var dynCall_viijii = Module["dynCall_viijii"] = function() {
- return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["D"]).apply(null, arguments);
+ return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["C"]).apply(null, arguments);
 };
 
 var dynCall_jiji = Module["dynCall_jiji"] = function() {
- return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["E"]).apply(null, arguments);
+ return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["D"]).apply(null, arguments);
 };
 
 var dynCall_iiiiij = Module["dynCall_iiiiij"] = function() {
- return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["F"]).apply(null, arguments);
+ return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["E"]).apply(null, arguments);
 };
 
 var dynCall_iiiiijj = Module["dynCall_iiiiijj"] = function() {
- return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["G"]).apply(null, arguments);
+ return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["F"]).apply(null, arguments);
 };
 
 var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = function() {
- return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["H"]).apply(null, arguments);
+ return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["G"]).apply(null, arguments);
 };
 
 var calledRun;
