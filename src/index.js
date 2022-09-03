@@ -8,6 +8,7 @@ import HeaderTop from './header/header'
 import Ieee from './content/ieee';
 import Int from './content/int'
 import Apple from './content/Apple'
+import Poll from './poll/poll'
 import reportWebVitals from './reportWebVitals';
 
 import { createTheme ,ThemeProvider} from '@mui/material/styles';
@@ -33,6 +34,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HeaderTop />}>
+          <Route path="poll" element={<Poll />} />
           <Route path="ieee" element={<Ieee />} />
           <Route path="int" element={<Int />} />
           <Route path="Apple" element={<Apple />} />

@@ -54,7 +54,9 @@ class oef extends React.Component{
     }
 
     getAnswer(){
-        alert(this.result)
+        this.setState((state,props) => ({
+            result: this.result,
+        })) 
     }
 
     check(){
