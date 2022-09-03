@@ -2,7 +2,7 @@ import { Box } from '@mui/system';
 import { Button, Input, InputLabel } from "@mui/material"
 import React from 'react';
 import CryptoJS, { enc } from 'crypto-js';
-function Textinp(props){
+function Textinp(props){ //react prop used to make a textinput with title and description
     return(
         <Box sx={{border: '1px solid black'}}>
             <InputLabel  htmlFor={`title${props.index}`}>Title</InputLabel>
@@ -12,10 +12,11 @@ function Textinp(props){
         </Box>
     )
 }
-function clone (objectToClone) { JSON.parse(JSON.stringify(objectToClone))};
+function clone (objectToClone) { JSON.parse(JSON.stringify(objectToClone))}; //creates a seperate clone of a object //to remove
 class SubQuestion extends React.Component{
     constructor(props){
         super(props)
+        //get the function from the parent
         this.sendData = props.sendData
         this.state = {
             main: {
@@ -28,8 +29,10 @@ class SubQuestion extends React.Component{
             ansWersText: []
         }
     }
+    //called when an input has detected a change
     update = (event) => {
         console.log("updating")
+        //function that sends the data of the child to the parent
         var send = () => {
             var out = {
                 main: this.state.main,
@@ -37,15 +40,15 @@ class SubQuestion extends React.Component{
                 index: this.state.index,
                 ansWers: this.state.ansWersText.slice()
             }
-            //out.ansWers = this.state.ansWersText.map((val) => console.log(val))
             this.sendData(out)
-            console.log(event.target)
         }
         if (event.target.id.includes("Base")){
+            //if the updated element is of the target base then only update the main data
             var temp = this.state.main
             temp[event.target.id.slice(0,-7)] = event.target.value
             this.setState({main: temp}, console.log(this.state.main), send())
         } else {
+            //else update get all the text out of the answers and update that
             var old = this.state.ansWersText
             old[event.target.id.slice(-1)] = event.target.value
             this.setState({ansWersText: old}, () => send())
@@ -53,11 +56,14 @@ class SubQuestion extends React.Component{
         
         
     }
+    //add a new input box
     add = () => {
-        console.log(this.state.answersAmount)
+        //enlarge the answertext array
         var temp = this.state.ansWersText
         temp.push("")
+        //and make react update values
         this.setState({answersAmount: this.state.answersAmount + 1, ansWersText: temp}, () => {
+            //get the html for the new update
             const answers = new Array(this.state.answersAmount).fill().map((_,index) => {
                 return (
                     <Box key={index}>
@@ -66,8 +72,8 @@ class SubQuestion extends React.Component{
                     </Box>
                 )
             })
-            //console.log(answers)
-            this.setState({ansWers: answers}, () => console.log(this.state))
+            //set the answers and reload the html
+            this.setState({ansWers: answers})
         })
     }
     
@@ -99,43 +105,36 @@ export default class Poll extends React.Component{
             childValues: new Map()
         }
     }
+    //function to update the main part of the parent block
     handler = (event) => {
-        console.log(event.target.id.slice(0,-2))
-        console.log(event.target.value)
         var temp = this.state.main
         temp[event.target.id.slice(0,-2)] = event.target.value
-        this.setState({main: temp}, console.log(this.state.main))
+        this.setState({main: temp})
     }
+
+    //adds a new subquestion and reloads the html
     Questions = () => {
         const result = new Array(this.state.subQuestionAmount).fill().map((_, index)=>{
                 return <SubQuestion sendData={this.GetValuesFromChild} key={index} index={index} />
             })
-        console.log(result)
         return this.setState({
            subQuestions: result 
         })
     }
+    //function that gets called inside the child
     GetValuesFromChild = (val) => {
         var rest = new Map(this.state.childValues)
-        console.log(rest)
-        console.log(val)
         rest.set(val.index, val)
-        console.log('got chqnges')
         this.setState({childValues: rest})
     }
+    //grabs the object data, encrypts it and put in the clipboard
     Compile = () => {
-
         var out = {
             main: this.state.main,
             children: Array.from(this.state.childValues)
         }
-        console.log(out)
-        console.log(JSON.stringify(out))
-        var secretKey = "cool" 
+        var secretKey = "cool" //TODO put in .env and get a decent string
         var encr = CryptoJS.AES.encrypt(JSON.stringify(out), secretKey).toString()
-        console.log(out)
-        console.log(encr)
-        console.log(encr.length)
         navigator.clipboard.writeText("Aquila"+encr)
     }
     render(){
