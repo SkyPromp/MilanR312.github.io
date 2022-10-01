@@ -79,7 +79,6 @@ std::string AppleToInt(double a, int exp, int mantissa){
         n++;
     } while (1<<n < b);
     print("n",n);
-    assert(n <= exp);
     assert(mantissa+exp< 64);
     std::string d = IntToInt(b,64);
     print("d",d);

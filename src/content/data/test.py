@@ -1,5 +1,5 @@
 # Script to modify output .js file created by emscripten to make it easily importable and useable in React
-# Created by @Sheldonfrith, 2022, based on this answer: https://stackoverflow.com/a/60571821/4205839
+# Modified by MilanR312 from the original by @Sheldonfrith, 2022, based on this answer: https://stackoverflow.com/a/60571821/4205839
 # by @Kushuh
 # WARNING: This script file was thrown together quickly and is thus very fragile
 # especially fragile to any changes in emscripten output .js file format, so will probably break with future versions of emscripten

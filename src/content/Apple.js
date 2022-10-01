@@ -17,7 +17,7 @@ class Apple extends oef{
         super(
             props,
             (a,b) => a==b,
-            "IEEE oef"
+            "Apple oef"
         )
         this.state = { 
             number: 2,

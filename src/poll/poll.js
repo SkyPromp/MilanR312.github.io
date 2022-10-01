@@ -86,7 +86,7 @@ class SubQuestion extends React.Component{
                 <Input type="text" id={`description-Base-${this.state.index}`} onChange={this.update}></Input>
                 <Box sx={{display: "flex"}}>
                     {this.state.ansWers}
-                    <Button onClick={this.add}>Add</Button>
+                    <Button onClick={this.add}>Add Answer</Button>
                 </Box>
             </Box>
         )
@@ -150,8 +150,8 @@ export default class Poll extends React.Component{
                         this.Questions()
                     })
                     
-                }}>Click</Button>
-                <Button onClick={this.Compile}>Get The string</Button>
+                }}>Add a Question</Button>
+                <Button onClick={this.Compile}>Copy the string to clipboard</Button>
             </Box>
         )
     }

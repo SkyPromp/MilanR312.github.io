@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter , Route, Routes} from 'react-router-dom';
+import { BrowserRouter , Route, Routes, Navigate} from 'react-router-dom';
 import './index.css';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -9,6 +9,7 @@ import Ieee from './content/ieee';
 import Int from './content/int'
 import Apple from './content/Apple'
 import Poll from './poll/poll'
+import { DefaultPage } from './DefaultPage/DegaultPage';
 import reportWebVitals from './reportWebVitals';
 
 import { createTheme ,ThemeProvider} from '@mui/material/styles';
@@ -33,11 +34,13 @@ root.render(
     <CssBaseline />
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HeaderTop />}>
+        <Route path="*" element={<HeaderTop />}>
+          
           <Route path="poll" element={<Poll />} />
           <Route path="ieee" element={<Ieee />} />
           <Route path="int" element={<Int />} />
           <Route path="Apple" element={<Apple />} />
+          <Route path="*" element={<DefaultPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
